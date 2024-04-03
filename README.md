@@ -71,3 +71,7 @@ Anchor框架和客户端库的版本更新可能会带来API的变化，因此�
 https://github.com/coral-xyz/anchor
 
 onLogs
+https://solana-labs.github.io/solana-web3.js/classes/Connection.html#onLogs
+
+or：
+https://solana.com/docs/rpc/websocket/logssubscribe
