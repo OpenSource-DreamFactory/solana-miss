@@ -1,0 +1,34 @@
+[package]
+name = "roma_token_exchange"
+version = "0.1.0"
+edition = "2018"
+description = "A simple, efficient, and secure ROMA token exchange platform using Solana's Anchor framework."
+authors = ["jack"]
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+anchor-lang = "0.29.0"
+anchor-spl = { version = "0.29.0", features = ["token"] }
+solana-program = "1.7.11"
+
+[lib]
+name = "roma_token_exchange"
+path = "src/lib.rs"
+crate-type = ["cdylib", "lib"]
+
+[features]
+default = ["std"]
+test-bpf = {}
+
+[profile.release]
+lto = true
+opt-level = "z"
+debug = false
+
+[workspace]
+members = ["."]
+exclude = ["node_modules"]
+
+[dev-dependencies]
+anchor-cli = "0.29.0"
+solana-cli = "1.7.11"
