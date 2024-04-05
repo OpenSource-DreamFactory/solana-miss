@@ -4,6 +4,8 @@ https://beta.solpg.io/
 
 编译，部署，查看区块浏览器
 
+solana代币部署文档：
+https://github.com/tm01013/how-to-make-your-own-crypto/tree/main
 
 代币部署说明：
 1,
