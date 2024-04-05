@@ -1,4 +1,97 @@
-Solana的Anchor框架是一个为Solana智能合约开发提供的高层次抽象的框架，旨在简化开发过程，让开发者能够更容易地构建、测试和部署智能合约。Anchor框架通过使用Rust语言，并提供了一系列宏（macros），帮助开发者定义智能合约的指令、账户和事件。
+项目文档
+
+## 环境设置
+
+### 安装Rust
+
+Rust是一个快速、内存安全的编程语言，非常适合智能合约的开发。要安装Rust，请访问[Rust官方网站](https://www.rust-lang.org/tools/install)并按照指引进行安装。安装完成后，你可以使用以下命令确认Rust版本：
+
+```sh
+rustc --version
+```
+
+### 安装Solana CLI
+
+Solana CLI是与Solana区块链交互的命令行工具。你可以通过以下Solana官方文档来安装Solana CLI：[Solana CLI安装指南](https://docs.solana.com/cli/install-solana-cli-tools)。
+
+### 安装Anchor
+
+Anchor是一个用于Solana程序开发的框架，提供了丰富的工具和库以简化智能合约的开发。安装Anchor的命令如下：
+
+```sh
+cargo install --git https://github.com/project-serum/anchor anchor-cli --locked
+```
+
+安装完成后，可以通过下面的命令来验证Anchor的安装：
+
+```sh
+anchor --version
+```
+
+## 合约部署
+
+### 编译合约
+
+首先，确保你的合约代码已经准备好。使用以下Anchor命令来编译合约：
+
+```sh
+anchor build
+```
+
+编译成功后，Anchor会在`target/deploy`目录下生成一个.so文件，这是你的合约编译结果。
+
+### 部署合约
+
+使用以下命令设置Solana CLI默认的网络（以devnet为例）：
+
+```sh
+solana config set --url https://api.devnet.solana.com
+```
+
+确保你的钱包有足够的SOL来支付部署费用。使用以下命令部署合约：
+
+```sh
+solana program deploy target/deploy/your_contract.so
+```
+
+部署成功后，Solana CLI会返回一个合约地址，这个地址代表了你的合约在Solana网络上的位置。
+
+## 合约交互
+
+### 设置Solana Web3.js
+
+为了与合约交互，你需要在你的项目中安装Solana Web3.js库：
+
+```sh
+npm install @solana/web3.js
+```
+
+### 示例代码
+
+以下是使用Solana Web3.js与合约交互的简单示例：
+
+```javascript
+const solanaWeb3 = require('@solana/web3.js');
+const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('devnet'));
+
+async function getBalance(walletAddress) {
+    let balance = await connection.getBalance(new solanaWeb3.PublicKey(walletAddress));
+    console.log(`Balance: ${balance}`);
+}
+
+// 替换成你的钱包地址
+const walletAddress = 'YourWalletAddressHere';
+getBalance(walletAddress);
+```
+
+### 更新价格和设置地址
+
+更新价格和设置地址的功能需要通过合约提供的方法实现，具体代码取决于合约的设计。
+
+## 事件监听
+
+你可以使用Solana的WebSocket服务来监听合约事件。具体实现方法取决于你的合约设计以及如何触发和记录事件。
+
 
 ### 事件处理
 
