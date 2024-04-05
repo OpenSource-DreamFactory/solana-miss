@@ -1,6 +1,12 @@
 ## Language
+将代码导入：
+https://beta.solpg.io/
 
-zh_cn
+编译，部署，查看区块浏览器
+
+ROMA Token 合约：
+ECKt9UeMb6mc1QkTkgysS8tSvKYdf6DY2oMNiyoVWJxh
+https://solscan.io/token/ECKt9UeMb6mc1QkTkgysS8tSvKYdf6DY2oMNiyoVWJxh?cluster=devnet
 
 ## Programming Language
 

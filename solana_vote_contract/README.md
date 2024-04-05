@@ -1,4 +1,11 @@
-## Programming Language
+## 部署说明
+
+将代码导入：
+https://beta.solpg.io/
+
+编译，部署，查看区块浏览器
+
+
 
 Rust
 
