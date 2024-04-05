@@ -32,6 +32,8 @@ emit!(MyEvent {
 ### 监听事件
 
 客户端监听事件通常是通过订阅特定的WebSocket端点来完成的，该端点与Solana节点或网关（如Solana的公共API或项目自己的网关）通信。客户端库（如@solana/web3.js）提供了订阅事件的功能。
+这个就是合约部署的ProgramId，一般在lib.rs文件的入口
+<img width="570" alt="image" src="https://github.com/OpenSource-DreamFactory/solana-miss/assets/3462559/d01d8268-2360-46be-ac2f-d0717dcdc724">
 
 以下是使用JavaScript（假设使用`@solana/web3.js`）监听Anchor定义的事件的简单示例：
 
