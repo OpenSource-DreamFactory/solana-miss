@@ -1,5 +1,10 @@
-## Language
-将代码导入：
+## 部署说明
+1，下载anchor框架，anchor build，anchor run，anchor deploy
+demo：
+https://dev.to/edge-and-node/the-complete-guide-to-full-stack-solana-development-with-react-anchor-rust-and-phantom-3291
+
+
+2，将代码导入网页编译：
 https://beta.solpg.io/
 
 编译，部署，查看区块浏览器
