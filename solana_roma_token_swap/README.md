@@ -4,6 +4,47 @@ https://beta.solpg.io/
 
 编译，部署，查看区块浏览器
 
+
+代币部署说明：
+1,
+![3c6c17f11847776c1e1ce702dabc86b0](https://github.com/OpenSource-DreamFactory/solana-miss/assets/3462559/5c4d0614-6408-4c9b-9b1c-eb71a9f75196)
+2，
+<img width="1123" alt="image" src="https://github.com/OpenSource-DreamFactory/solana-miss/assets/3462559/c3d2ab04-5560-440b-a880-cb60bb3e9eb1">
+3，
+<img width="981" alt="image" src="https://github.com/OpenSource-DreamFactory/solana-miss/assets/3462559/50be03e8-d139-4af2-9861-a95fdd355248">
+4，
+<img width="791" alt="image" src="https://github.com/OpenSource-DreamFactory/solana-miss/assets/3462559/c0429a8e-171b-403a-b59e-6e661b922dbb">
+
+5，
+```
+ubuntu@merlin-rpc-json-node:~/how-to-make-your-own-crypto$ cat metadata.json 
+{
+  "name": "ROMA Token",
+  "symbol": "roma",
+  "description": "roma",
+  "image": "https://logolook.net/wp-content/uploads/2023/09/Roma-Logo.png",
+  "attributes": [],
+  "properties": {
+    "files": [
+      {
+        "uri": "https://logolook.net/wp-content/uploads/2023/09/Roma-Logo.png",
+        "type": "image/png"
+      }
+    ]
+  }
+}
+
+```
+
+6,上传Metadata
+
+
+<img width="1115" alt="image" src="https://github.com/OpenSource-DreamFactory/solana-miss/assets/3462559/b8587abf-1301-43a9-ac3a-b893dd05619c">
+
+<img width="1123" alt="image" src="https://github.com/OpenSource-DreamFactory/solana-miss/assets/3462559/a8f88e0c-dbe3-467c-a20a-7ca412a10925">
+
+
+
 ROMA Token 合约：
 ECKt9UeMb6mc1QkTkgysS8tSvKYdf6DY2oMNiyoVWJxh
 https://solscan.io/token/ECKt9UeMb6mc1QkTkgysS8tSvKYdf6DY2oMNiyoVWJxh?cluster=devnet
