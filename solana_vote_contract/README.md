@@ -9,6 +9,10 @@ https://beta.solpg.io/
 
 Rust
 
+##
+
+为投票合约设置 Roma 代币合约：如果你有一个使用 Roma 代币的投票系统，确保通过调用一个专门的函数（例如 set_roma_token_for_voting）来设置 Roma 代币合约地址。
+
 ## Requirements
 
 投票合约:投票合约的作用是，在用户有了ROMA币之后。可以给自己喜欢的女明星刷票。 

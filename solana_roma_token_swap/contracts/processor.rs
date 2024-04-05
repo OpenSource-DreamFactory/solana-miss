@@ -1,99 +1,85 @@
-use crate::error::CustomError;
-use crate::state::{State, RomaTokenAccount, ExchangeRate};
-use crate::utils::{calculate_roma_amount, transfer_tokens};
+use crate::error::Error;
+use crate::state::{ExchangeContract, Token};
+use crate::utils::{check_account_owner, perform_math_operation};
 use anchor_lang::prelude::*;
+use solana_program::program::{invoke};
+use spl_token::instruction::transfer as spl_token_transfer;
 
-pub struct Processor;
+pub fn process_exchange(
+    program_id: &Pubkey,
+    accounts: &[AccountInfo],
+    token_a: Pubkey,
+    token_b: Pubkey,
+    amount: u64,
+) -> ProgramResult {
+    let account_iter = &mut accounts.iter();
 
-impl Processor {
-    pub fn process_instruction(
-        program_id: &Pubkey,
-        accounts: &[AccountInfo],
-        instruction_data: &[u8],
-    ) -> ProgramResult {
-        // Unpack and validate the instruction data
-        let instruction = Self::unpack_instruction(instruction_data)?;
-
-        match instruction {
-            Instruction::SetExchangeRate { rate } => {
-                // Validate the number of accounts and that the first account is a signer
-                Self::validate_accounts(accounts, 1, true)?;
-                Self::process_set_exchange_rate(accounts, rate, program_id)
-            },
-            Instruction::ToggleSwap => {
-                // Validate the number of accounts and that the first account is a signer
-                Self::validate_accounts(accounts, 1, true)?;
-                Self::process_toggle_swap(accounts, program_id)
-            },
-            Instruction::Transfer { amount } => {
-                // Validate the number of accounts and that the first account is a signer
-                Self::validate_accounts(accounts, 3, true)?;
-                Self::process_transfer(accounts, amount, program_id)
-            },
-        }
+    // 获取交换合约账户
+    let exchange_contract_account = next_account_info(account_iter)?;
+    if exchange_contract_account.owner != program_id {
+        return Err(ProgramError::IncorrectProgramId);
     }
 
-    fn process_set_exchange_rate(
-        accounts: &[AccountInfo],
-        rate: ExchangeRate,
-        program_id: &Pubkey,
-    ) -> ProgramResult {
-        let account = State::try_from_slice(&accounts[0].data.borrow())?;
-        account.set_exchange_rate(rate, program_id, &accounts[0])?;
-        Ok(())
+    // 验证Token账户所有权
+    let token_a_account = next_account_info(account_iter)?;
+    if !check_account_owner(token_a_account, program_id)? {
+        return Err(Error::AccountOwnershipMismatch.into());
     }
 
-    fn process_toggle_swap(
-        accounts: &[AccountInfo],
-        program_id: &Pubkey,
-    ) -> ProgramResult {
-        let account = State::try_from_slice(&accounts[0].data.borrow())?;
-        account.toggle_swap(program_id, &accounts[0])?;
-        Ok(())
+    let token_b_account = next_account_info(account_iter)?;
+    if !check_account_owner(token_b_account, program_id)? {
+        return Err(Error::AccountOwnershipMismatch.into());
     }
 
-    fn process_transfer(
-        accounts: &[AccountInfo],
-        amount: u64,
-        program_id: &Pubkey,
-    ) -> ProgramResult {
-        let sender_account = RomaTokenAccount::try_from_slice(&accounts[0].data.borrow())?;
-        let receiver_account = RomaTokenAccount::try_from_slice(&accounts[1].data.borrow())?;
-        let state = State::try_from_slice(&accounts[2].data.borrow())?;
+    // 解析交换合约数据
+    let mut exchange_contract_data = ExchangeContract::try_from_slice(&exchange_contract_account.data.borrow())?;
+    
+    // 计算交易后的数量，考虑费用
+    let token_a_amount = perform_math_operation(amount, exchange_contract_data.fee, true)?;
+    let token_b_amount = perform_math_operation(amount, exchange_contract_data.fee, false)?;
 
-        let roma_amount = calculate_roma_amount(amount, state.rate)?;
-        transfer_tokens(
-            program_id,
-            &sender_account,
-            &receiver_account,
-            roma_amount,
-            &accounts[0],
-            &accounts[1],
-        )?;
-        Ok(())
-    }
+    // 执行代币交换
+    perform_token_transfer(
+        program_id,
+        token_a_account,
+        token_b_account,
+        token_a_amount,
+    )?;
+    perform_token_transfer(
+        program_id,
+        token_b_account,
+        token_a_account,
+        token_b_amount,
+    )?;
 
-    fn unpack_instruction(data: &[u8]) -> Result<Instruction, ProgramError> {
-        Instruction::try_from_slice(data).or_else(|e| {
-            msg!("Error unpacking instruction: {:?}", e);
-            Err(ProgramError::CustomError(CustomError::InvalidInstruction.into()))
-        })
-    }
+    // 更新交换合约数据
+    exchange_contract_data.exchange(token_a, token_b, amount)?;
 
-    fn validate_accounts(accounts: &[AccountInfo], expected_len: usize, needs_signer: bool) -> ProgramResult {
-        if accounts.len() < expected_len {
-            return Err(ProgramError::CustomError(CustomError::InvalidAccountInput.into()));
-        }
-        if needs_signer && !accounts[0].is_signer {
-            return Err(ProgramError::MissingRequiredSignature);
-        }
-        Ok(())
-    }
+    // 保存更新后的交换合约数据
+    exchange_contract_account.data.borrow_mut().copy_from_slice(&exchange_contract_data.try_to_vec()?);
+
+    Ok(())
 }
 
-#[derive(Debug, PartialEq)]
-pub enum Instruction {
-    SetExchangeRate { rate: ExchangeRate },
-    ToggleSwap,
-    Transfer { amount: u64 },
+// 实现代币转移逻辑
+fn perform_token_transfer(
+    token_program_id: &Pubkey,
+    source_account: &AccountInfo,
+    destination_account: &AccountInfo,
+    amount: u64,
+) -> ProgramResult {
+    let transfer_instruction = spl_token_transfer(
+        token_program_id,
+        source_account.key,
+        destination_account.key,
+        amount,
+        &[&source_account.key],
+    )?;
+    invoke(
+        &transfer_instruction,
+        &[
+            source_account.clone(),
+            destination_account.clone(),
+        ],
+    )
 }

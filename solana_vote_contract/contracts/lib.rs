@@ -45,6 +45,16 @@ pub mod voting_contract {
         Ok(())
     }
 
+    //为投票合约设置 Roma 代币合约
+    pub fn set_roma_token_for_voting(
+        ctx: Context<SetRomaTokenForVoting>,
+        roma_token_account: Pubkey,
+    ) -> Result<()> {
+        let vote_state = &mut ctx.accounts.vote_state;
+        vote_state.roma_token_account = roma_token_account;
+        Ok(())
+    }
+
     pub fn toggle_contract(ctx: Context<ToggleContract>, is_active: bool) -> Result<()> {
         let contract = &mut ctx.accounts.contract;
         contract.vote_settings.contract_active = is_active;
